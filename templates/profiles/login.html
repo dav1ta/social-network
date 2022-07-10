@@ -22,11 +22,12 @@
 
   <!-- Submit button -->
   <button type="submit" class="btn btn-primary btn-block mb-4">Sign in</button>
+<a class='btn btn-secondary' href={% url 'register' %}>Register</a>
     {% else %}
     <p>You are already signed in</p>
   {% endif %}
   <!-- Register buttons -->
 </form>
-
 </div>
+
 {% endblock%}
