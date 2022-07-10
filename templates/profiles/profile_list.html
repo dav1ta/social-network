@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content%}
+<div class="d-flex justify-content-center ">
+  <div style="width:30%">
+  {% for profile in profiles %}
+        <div style=" background: #f8f8f8;border-radius: 4px;border: 1px solid #f1f2f2;padding: 20px;margin-bottom: 20px;">
+
+          <div >
+            <div class="row">
+              <div class="col-md-2 col-sm-2">
+                <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="user"
+                  style=" height: 80px;width: 80px;border-radius: 50%;">
+              </div>
+              <div class="col-md-7 col-sm-7">
+                <h5><a href="#" class="profile-link">{{ profile.username }}</a></h5>
+                <h6>{{ profile.first_name }} {{profile.last_name}}</h6>
+                <p>{{ profile.biography | truncatechars:100 }}</p>
+                <p class="text-muted">500m away</p>
+              </div>
+              <div class="col-md-3 col-sm-3">
+                   <input type="button" class="btn {% if profile not in user.cached_friends.all %}btn-primary{% else %}btn-dark{% endif %}" id="{{profile.pk}}" onclick=add_friend({{ profile.pk }})
+        value="{% if profile not in user.cached_friends.all %}Add{% else %}Unfriend{% endif %}"></input>
+              </div>
+            </div>
+          </div>
+        </div>
+{% endfor %}
+ <div class="col-md-4">
+
+
+                    {% if is_paginated %}
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+                  {% if page_obj.has_previous %}
+                <li page-item><a  class="page-link"href="?page={{ page_obj.previous_page_number }}">&lt;</a></li>
+                  {% else %}
+                  <li class="disabled page-item"><span class="page-link">&lt;</span></li>
+                  {% endif %}
+                  {% for i in paginator.page_range %}
+                  {% if page_obj.number == i %}
+                <li class="active page-item"><span class="page-link">{{ i }}</span></li>
+                  {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                  {% endfor %}
+                  {% if page_obj.has_next %}
+                <li "page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&gt;</a></li>
+                  {% else %}
+                  <li class="disabled page-item"><span class="page-link">&gt;</span></li>
+                  {% endif %}
+              </ul>
+                    {% endif %}
+</nav>
+    </div>
+      </div>
+
+
+
+</div>
+<script>
+
+  function add_friend(pk) {
+    console.log("clicked")
+    const data = {user_id: pk};
+    var token = '{{ csrf_token }}'
+    fetch('/profiles/add_friends/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': token,
+      },
+      body: JSON.stringify(data),
+    })
+      .then(response => response.json())
+      .then(data => {
+        let element = document.getElementById(data);
+        if (element.value === 'Add') {
+          element.value = "Unfriend"
+          element.classList.remove("btn-primary");
+          element.classList.add("btn-dark");
+          console.log(element);
+        }
+        else {
+          element.value = "Add"
+          element.classList.add("btn-primary");
+          element.classList.remove("btn-dark");
+        }
+
+
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+
+  }
+</script>
+
+{% endblock %}

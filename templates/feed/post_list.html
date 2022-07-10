@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex justify-content-center" >
+
+<div class="d-flex flex-column" style="width:40%" >
+<div class="card" style="width: 100%;margin-bottom:30px">
+  <a href='{% url 'post_create' %}'> <i class="bi bi-plus-circle"></i> Add new post</a>
+  
+</div>
+{% for post in posts %}
+<div class="card" style="width: 100%;margin-bottom:30px">
+  {% if post.image %}
+  <img src="{{ post.image.url }}" class="card-img-top" alt="...">
+  {% endif %}
+  <div class="card-body">
+    <h5 class="card-title">{{ post.title }}</h5>
+      <small>Published By {{ post.profile_id}}</small>
+      <small>At {{ post.date_published}}</small>
+    <p class="card-text">{{ post.description|truncatechars:150 }}</p>
+    <a href="{% url 'post' post.id %}" class="btn btn-primary">More</a>
+    {% if user.id == post.profile_id.id %}
+    <a href="{% url 'post_delete' post.id %}" class="btn btn-primary">Delete</a>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+
+ <div class="col-md-4">
+
+
+                    {% if is_paginated %}
+<nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+                  {% if page_obj.has_previous %}
+                <li page-item><a  class="page-link"href="?page={{ page_obj.previous_page_number }}">&lt;</a></li>
+                  {% else %}
+                  <li class="disabled page-item"><span class="page-link">&lt;</span></li>
+                  {% endif %}
+                  {% for i in paginator.page_range %}
+                  {% if page_obj.number == i %}
+                <li class="active page-item"><span class="page-link">{{ i }}</span></li>
+                  {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                  {% endif %}
+                  {% endfor %}
+                  {% if page_obj.has_next %}
+                <li "page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">&gt;</a></li>
+                  {% else %}
+                  <li class="disabled page-item"><span class="page-link">&gt;</span></li>
+                  {% endif %}
+              </ul>
+                    {% endif %}
+</nav>
+    </div>
+</div>
+</div>
+
+
+{% endblock %}
